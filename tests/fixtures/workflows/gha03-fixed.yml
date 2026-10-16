@@ -1,0 +1,14 @@
+name: gha03 fixed
+on:
+  issues:
+    types: [opened]
+permissions:
+  contents: read
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo the issue title
+        env:
+          TITLE: ${{ github.event.issue.title }}
+        run: echo "$TITLE"

@@ -1,0 +1,65 @@
+[
+  {
+    "id": "GHA01",
+    "title": "Unpinned third-party action",
+    "slug": "gha01-unpinned-third-party-action",
+    "why": "A tag or branch ref is a pointer the action's maintainer — or anyone who can retag it — can move to different code after you have reviewed it. Only a full-length commit SHA names one immutable revision.",
+    "fix": "Pin the ref to a full 40-character commit SHA and keep the tag in a trailing comment, e.g. actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2",
+    "message": "Action is pinned by tag or branch, not a commit SHA — FLAG for review: the tag can be moved to new code under you.",
+    "anchor": "gha01-unpinned-third-party-action"
+  },
+  {
+    "id": "GHA02",
+    "title": "Pull-request-target with a head checkout",
+    "slug": "gha02-pull-request-target-with-head-checkout",
+    "why": "pull_request_target runs in the base repository's context: it receives a read/write GITHUB_TOKEN and can read repository secrets. Checking out the pull request's own head puts attacker-authored files on disk in that context.",
+    "fix": "Use pull_request instead of pull_request_target, or drop the head checkout and work only from the base branch, or split the job so nothing from the fork runs in the privileged workflow.",
+    "message": "This runs untrusted pull-request code with a write-scoped token and secrets in scope — FLAG for review: confirm why pull_request_target is needed and whether the head checkout can go.",
+    "anchor": "gha02-pull-request-target-with-head-checkout"
+  },
+  {
+    "id": "GHA03",
+    "title": "Interpolation into run",
+    "slug": "gha03-interpolation-into-run",
+    "why": "GitHub substitutes the expression into the script text before the shell ever sees it, so a title, body or branch name containing quotes or command substitution becomes shell syntax.",
+    "fix": "Pass the value through env: and reference the variable, quoting it in the shell: env: {TITLE: \"${{ github.event.issue.title }}\"} then run: echo \"$TITLE\"",
+    "message": "Untrusted event data is interpolated directly into a shell step — FLAG for review: pass it through `env:` and quote the variable.",
+    "anchor": "gha03-interpolation-into-run"
+  },
+  {
+    "id": "GHA04",
+    "title": "Over-scoped workflow token",
+    "slug": "gha04-over-scoped-token",
+    "why": "permissions: write-all, or a job that pushes or publishes without declaring permissions at all, hands whatever runs in that job the ability to write to the repository.",
+    "fix": "Declare the scopes the job needs and nothing else — usually permissions: {contents: read} at workflow level, and contents: write only on the one job that has to write.",
+    "message": "The workflow token carries more scope than this job needs — FLAG for review: grant only the scopes this job needs.",
+    "anchor": "gha04-over-scoped-token"
+  },
+  {
+    "id": "GHA05",
+    "title": "Self-hosted runner on an untrusted trigger",
+    "slug": "gha05-self-hosted-runner-on-an-untrusted-trigger",
+    "why": "A self-hosted runner keeps state between jobs. A pull request from a fork that lands on it can read what the previous job left behind and, on a long-lived host, reach whatever that host can reach.",
+    "fix": "Use a GitHub-hosted runner for untrusted triggers, or run the self-hosted runner in an ephemeral, isolated, credential-free context with no network path to anything you care about.",
+    "message": "A self-hosted runner receives work from an untrusted trigger — FLAG for review: a fork can run code on that host; confirm it is ephemeral and isolated.",
+    "anchor": "gha05-self-hosted-runner-on-an-untrusted-trigger"
+  },
+  {
+    "id": "GHA06",
+    "title": "Secrets reachable by untrusted or logged code",
+    "slug": "gha06-secrets-reachable-by-untrusted-or-logged-code",
+    "why": "A secret in env: or with: is in scope for every command that step runs, and a secret interpolated into a run: block can be printed into a log that outlives the job. persist-credentials leaves the token in .git/config for later steps to reuse.",
+    "fix": "Keep secrets out of jobs that touch pull-request code, pass them by name through env: at the step that needs them, never echo them, and set persist-credentials: false when the checkout does not need to push.",
+    "message": "This path can expose a secret to untrusted or logged code — FLAG for review: check whether the secret has to be in scope here at all.",
+    "anchor": "gha06-secrets-reachable-by-untrusted-or-logged-code"
+  },
+  {
+    "id": "GHA07",
+    "title": "Outsider-drivable trigger executing code",
+    "slug": "gha07-outsider-drivable-trigger-executing-code",
+    "why": "issue_comment, discussion_comment and workflow_run can be started by someone outside the repository. A job that then checks out and builds the repository, or installs an artefact the upstream run produced, runs content that outsider influenced.",
+    "fix": "Gate the job on the upstream conclusion and on an allow-list of authors or labels, treat downloaded artefacts as untrusted input, and never pipe a download straight into a shell.",
+    "message": "This trigger can be driven from outside the repository and the job executes code — FLAG for review: confirm the trust assumptions and add an upstream conclusion check.",
+    "anchor": "gha07-outsider-drivable-trigger-executing-code"
+  }
+]

@@ -1,0 +1,14 @@
+name: gha03 bad
+on:
+  issues:
+    types: [opened]
+permissions:
+  contents: read
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo the issue title
+        run: echo ${{ github.event.issue.title }}
+      - name: Quoted form
+        run: echo "${{ github.event.issue.body }}"
