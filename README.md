@@ -100,7 +100,7 @@ Every pattern is documented with the reasoning, a real workflow shape and the fi
 | [GHA03](docs/patterns.md#gha03-interpolation-into-run) | `${{ }}` with untrusted event data inside `run:` | pass it through `env:` and quote `"$VAR"` |
 | [GHA04](docs/patterns.md#gha04-over-scoped-token) | `permissions: write-all`, or a pushing job with no `permissions:` | declare per-job scopes, default `contents: read` |
 | [GHA05](docs/patterns.md#gha05-self-hosted-runner-on-an-untrusted-trigger) | `self-hosted` runner plus `pull_request(_target)` | GitHub-hosted runner, or an ephemeral isolated host |
-| [GHA06](docs/patterns.md#gha06-secrets-reachable-by-untrusted-or-logged-code) | secrets in `env:`/`with:`/`run:` next to untrusted code; `persist-credentials: true` | keep secrets out of that job, never echo them |
+| [GHA06](docs/patterns.md#gha06-secrets-reachable-by-untrusted-or-logged-code) | a secret in a job-level `env:` or written into a `run:` step's text; `persist-credentials: true` | keep secrets out of that job, never echo them |
 | [GHA07](docs/patterns.md#gha07-outsider-drivable-trigger-executing-code) | `issue_comment` / `discussion_comment` / `workflow_run` jobs that run code | gate on author and upstream conclusion, treat artefacts as untrusted |
 
 The count is machine-checked: `tools/check_sync.py` fails CI if the README, `ghaudit/rules.json` and `docs/patterns.md` disagree about how many patterns there are.
