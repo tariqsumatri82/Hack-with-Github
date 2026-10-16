@@ -1,0 +1,23 @@
+# Example only — this file is not part of .github/workflows and is never run.
+# It exists so the README's captured output can be reproduced with:
+#     python3 ghaudit.py examples
+name: PR triage
+
+on:
+  pull_request_target:
+    types: [opened, synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Greet the contributor
+        run: |
+          echo "PR title: ${{ github.event.pull_request.title }}"
+          npm ci

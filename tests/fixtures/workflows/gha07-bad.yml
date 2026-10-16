@@ -1,0 +1,15 @@
+name: gha07 bad
+on:
+  workflow_run:
+    workflows: ["Build"]
+    types: [completed]
+permissions:
+  contents: read
+jobs:
+  comment:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+      - name: Install
+        run: |
+          curl -sSL https://example.com/install.sh | bash

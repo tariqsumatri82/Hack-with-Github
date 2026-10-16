@@ -1,0 +1,10 @@
+name: gha02 trigger only
+on: pull_request_target
+permissions:
+  contents: read
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Label the pull request
+        run: echo "labelling"
